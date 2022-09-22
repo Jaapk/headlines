@@ -3,20 +3,23 @@ from flask import Flask
 
 app = Flask(__name__)
 
-NRC_FEED = "http://nrc.nl/rss/"
+RSS_FEEDS = {'bbc': 'http://feeds.bbci.co.uk/news/rss.xml',
+             'cnn': 'http://rss.cnn.com/rss/edition.rss',
+             'nrc': "http://nrc.nl/rss/"}
 
 @app.route("/")
-def get_news():
-  feed = feedparser.parse(NRC_FEED)
+@app.route("/<publication>")
+def get_news(publication="nrc"):
+  feed = feedparser.parse(RSS_FEEDS[publication])
   first_article = feed['entries'][0]
   return """<html>
     <body>
-        <h1> NRC Headlines </h1>
-        <b>{0}</b> <br/>
-        <i>{1}</i> <br/>
-        <p>{2}</p> <br/>
+        <h1>Headlines </h1>
+        <b>{0}</b> </ br>
+        <i>{1}</i> </ br>
+        <p>{2}</p> </ br>
     </body>
-</html>""".format(first_article.get("title"), first_article.get("published"), first_article.get("summary"))
+  </html>""".format(first_article.get("title"), first_article.get("published"), first_article.get("summary"))
 
 if __name__ == "__main__":
   app.run(port=5000, debug=True)
